@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { generateTaskTree, fileToBase64 } from '../utils/api'
+import { generateTaskTree } from '../utils/api'
 import { getCase, saveCase, generateId } from '../utils/storage'
 
 export default function CommissionPage() {
@@ -8,7 +8,6 @@ export default function CommissionPage() {
   const navigate = useNavigate()
   const [caseName, setCaseName] = useState('')
   const [materials, setMaterials] = useState('')
-  const [materialFiles, setMaterialFiles] = useState([])
   const [analyzing, setAnalyzing] = useState(false)
   const [existingCase, setExistingCase] = useState(null)
 
@@ -19,17 +18,12 @@ export default function CommissionPage() {
     }
   }, [caseId])
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files || [])
-    setMaterialFiles(prev => [...prev, ...files])
-  }
-
   const handleSubmit = async () => {
     if (!caseName.trim()) return alert('请输入案件名称')
     setAnalyzing(true)
 
     try {
-      const result = await generateTaskTree(caseName, materials || materialFiles.map(f => f.name).join(', '))
+      const result = await generateTaskTree(caseName, materials)
 
       if (existingCase) {
         // 更新已有案件
@@ -117,6 +111,14 @@ export default function CommissionPage() {
 
       {/* 表单内容 */}
       <div style={{ flex: 1, padding: '24px 20px', overflowY: 'auto' }}>
+        {/* 侦探动画 */}
+        <div style={{
+          textAlign: 'center', marginBottom: '20px',
+          animation: 'detectiveBounce 2s ease-in-out infinite',
+        }}>
+          <span style={{ fontSize: '48px', display: 'block' }}>🕵️</span>
+        </div>
+
         {/* 案件名称 */}
         <div style={{ marginBottom: '24px', animation: 'fadeInUp 0.5s ease' }}>
           <label style={{ display: 'block', fontSize: '13px', color: '#a89880', marginBottom: '8px' }}>
@@ -133,51 +135,21 @@ export default function CommissionPage() {
           </p>
         </div>
 
-        {/* 佐证材料 - 文字 */}
+        {/* 任务描述 */}
         <div style={{ marginBottom: '24px', animation: 'fadeInUp 0.5s ease 0.1s both' }}>
           <label style={{ display: 'block', fontSize: '13px', color: '#a89880', marginBottom: '8px' }}>
-            佐证材料（文字补充）
+            任务描述
           </label>
           <textarea className="input-field"
-            placeholder="描述你的现状、限制条件和最终目标。材料越具体，侦探越容易找到准确线索。"
+            placeholder="描述你想完成的事情。越具体，侦探拆解得越准确。\n\n例如：\n· 创建作品集选题，需要包含3个方向\n· 准备下周的汇报PPT，约15页\n· 学习React基础，能做出一个小项目"
             value={materials}
             onChange={e => setMaterials(e.target.value)}
-            rows={4}
+            rows={5}
+            style={{ fontSize: '14px', lineHeight: 1.7 }}
           />
-        </div>
-
-        {/* 佐证材料 - 文件 */}
-        <div style={{ marginBottom: '24px', animation: 'fadeInUp 0.5s ease 0.2s both' }}>
-          <label style={{ display: 'block', fontSize: '13px', color: '#a89880', marginBottom: '8px' }}>
-            佐证材料（图片/文件）
-          </label>
-          <div onClick={() => document.getElementById('material-upload').click()} style={{
-            border: '2px dashed var(--border-dark)',
-            borderRadius: '12px', padding: '32px 20px',
-            textAlign: 'center', cursor: 'pointer',
-            transition: 'all 0.3s',
-            background: 'rgba(26,26,26,0.5)',
-          }}>
-            <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}></span>
-            <span style={{ fontSize: '13px', color: '#a89880' }}>
-              {materialFiles.length > 0 ? `已添加 ${materialFiles.length} 个文件` : '点击添加图片、文件、截图'}
-            </span>
-          </div>
-          <input id="material-upload" type="file" multiple accept="image/*,.pdf,.doc,.docx,.txt"
-            onChange={handleFileChange} style={{ display: 'none' }} />
-
-          {materialFiles.length > 0 && (
-            <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {materialFiles.map((f, i) => (
-                <span key={i} style={{
-                  background: 'rgba(26,26,26,0.8)',
-                  border: '1px solid var(--border-dark)',
-                  borderRadius: '6px', padding: '6px 12px',
-                  fontSize: '12px', color: '#a89880',
-                }}>{f.name}</span>
-              ))}
-            </div>
-          )}
+          <p style={{ fontSize: '11px', color: '#6b5d4f', marginTop: '6px' }}>
+            侦探会根据描述，将任务拆解为可执行的小步骤
+          </p>
         </div>
       </div>
 
@@ -187,10 +159,12 @@ export default function CommissionPage() {
         borderTop: '1px solid var(--border-dark)',
         display: 'flex', gap: '12px',
       }}>
-        <button onClick={handleArchive} className="btn-secondary" style={{ flex: 1 }}>
-          归档
-        </button>
-        <button onClick={handleSubmit} className="btn-primary" style={{ flex: 2 }}
+        {existingCase && (
+          <button onClick={handleArchive} className="btn-secondary" style={{ flex: 1 }}>
+            归档
+          </button>
+        )}
+        <button onClick={handleSubmit} className="btn-primary" style={{ flex: existingCase ? 2 : 1 }}
           disabled={analyzing}>
           {analyzing ? (
             <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>

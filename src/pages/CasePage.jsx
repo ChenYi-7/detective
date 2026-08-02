@@ -9,7 +9,7 @@ export default function CasePage() {
   const [loading, setLoading] = useState(true)
   const [showClue, setShowClue] = useState(false)
   const [stampAnim, setStampAnim] = useState(false)
-  const [showCommission, setShowCommission] = useState(false)
+  const [showCaseComplete, setShowCaseComplete] = useState(false)
 
   useEffect(() => {
     const data = getCase(caseId)
@@ -50,11 +50,11 @@ export default function CasePage() {
     })
     setTimeout(() => {
       setStampAnim(false)
-      // 所有线索都完成后，才显示委托案件页
+      // 首个案件（快速开工）完成后，跳转到委托案件页
       const allDone = caseData.clues?.every(c => c.clue_status === 'done')
-      const firstClue = caseData.clues?.[0]
-      if (allDone && firstClue?.is_activation_clue && !caseData.has_formal_goal) {
-        setShowCommission(true)
+      const isFirstCase = caseData.creation_mode === 'quick_capture'
+      if (allDone && isFirstCase && !caseData.has_formal_goal) {
+        setShowCaseComplete(true)
       }
     }, 2000)
   }
@@ -416,43 +416,58 @@ export default function CasePage() {
         </div>
       )}
 
-      {/* 委托案件弹窗 */}
-      {showCommission && (
+      {/* 首个案件完成 - 跳转委托页 */}
+      {showCaseComplete && (
         <div style={{
           position: 'absolute', inset: 0, zIndex: 20,
-          background: 'rgba(0,0,0,0.85)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(0,0,0,0.9)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
           padding: '20px',
-          animation: 'fadeIn 0.3s ease',
+          animation: 'fadeIn 0.5s ease',
         }}>
-          <div style={{
-            background: 'linear-gradient(145deg, #d4c5a9, #c4b599)',
-            borderRadius: '8px', padding: '28px 24px',
-            maxWidth: '340px', width: '100%',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-            animation: 'scaleIn 0.4s ease',
-          }}>
-            <h3 style={{
-              fontFamily: 'var(--font-calligraphy)',
-              fontSize: '22px', color: '#2c1810',
-              textAlign: 'center', marginBottom: '12px',
-            }}>案件初步告破！</h3>
-            <p style={{
-              fontSize: '13px', color: '#6b5d4f',
-              textAlign: 'center', marginBottom: '20px', lineHeight: 1.6,
+          <div style={{ animation: 'stamp 0.6s ease-out', marginBottom: '24px' }}>
+            <div style={{
+              width: '100px', height: '100px',
+              border: '3px solid var(--red-primary)',
+              borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transform: 'rotate(-15deg)',
+              background: 'rgba(192,57,43,0.15)',
             }}>
-              所有线索已完成，启动章已盖下。现在告诉侦探，你真正想完成的目标是什么？
-            </p>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => { setShowCommission(false); navigate(`/commission/${caseId}`) }}
-                className="btn-primary" style={{ flex: 1, fontSize: '14px' }}>
-                委托案件
-              </button>
-              <button onClick={() => setShowCommission(false)} className="btn-secondary"
-                style={{ color: '#2c1810', borderColor: '#8b7d6b' }}>
-                稍后
-              </button>
+              <span style={{
+                color: 'var(--red-primary)',
+                fontFamily: 'var(--font-calligraphy)',
+                fontSize: '28px', fontWeight: 'bold',
+              }}>结案</span>
             </div>
+          </div>
+          <h2 style={{
+            fontFamily: 'var(--font-calligraphy)',
+            fontSize: '24px', color: '#f0e6d3',
+            textAlign: 'center', marginBottom: '12px',
+            animation: 'fadeInUp 0.5s ease 0.3s both',
+          }}>桌面已整理完毕！</h2>
+          <p style={{
+            fontSize: '14px', color: '#a89880',
+            textAlign: 'center', marginBottom: '32px', lineHeight: 1.6,
+            animation: 'fadeInUp 0.5s ease 0.5s both',
+            maxWidth: '280px',
+          }}>
+            侦探已清除障碍。<br />现在，告诉我你真正想完成的目标是什么？
+          </p>
+          <div style={{
+            display: 'flex', gap: '12px', width: '100%', maxWidth: '300px',
+            animation: 'fadeInUp 0.5s ease 0.7s both',
+          }}>
+            <button onClick={() => navigate('/commission')}
+              className="btn-primary" style={{ flex: 2, fontSize: '15px' }}>
+              委托新案件
+            </button>
+            <button onClick={() => navigate('/home')} className="btn-secondary"
+              style={{ flex: 1, fontSize: '13px' }}>
+              稍后
+            </button>
           </div>
         </div>
       )}
