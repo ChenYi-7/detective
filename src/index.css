@@ -1,0 +1,267 @@
+/* ===== 开工侦探社 - 全局样式 ===== */
+/* 侦探黑色调 | 红色强调 | 复古纸质质感 */
+
+:root {
+  --bg-dark: #0a0a0a;
+  --bg-darker: #050505;
+  --bg-card: #1a1a1a;
+  --bg-card-hover: #252525;
+  --bg-paper: #d4c5a9;
+  --bg-paper-dark: #b8a88a;
+  --red-primary: #c0392b;
+  --red-dark: #922b21;
+  --red-light: #e74c3c;
+  --red-glow: rgba(192, 57, 43, 0.4);
+  --gold: #d4a017;
+  --gold-light: #f1c40f;
+  --silver: #bdc3c7;
+  --text-primary: #f0e6d3;
+  --text-secondary: #a89880;
+  --text-muted: #6b5d4f;
+  --border-dark: #2a2a2a;
+  --border-paper: #8b7d6b;
+  --shadow-dark: rgba(0, 0, 0, 0.8);
+  --shadow-red: rgba(192, 57, 43, 0.3);
+  --font-serif: 'Noto Serif SC', 'SimSun', 'STSong', serif;
+  --font-calligraphy: 'Ma Shan Zheng', 'KaiTi', 'STKaiti', '楷体', cursive;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-serif);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 通用工具类 ===== */
+.page-container {
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--red-primary), var(--red-dark));
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--shadow-red);
+  letter-spacing: 2px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow-red);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-paper);
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.btn-secondary:hover {
+  background: rgba(212, 197, 169, 0.1);
+  border-color: var(--text-secondary);
+}
+
+/* ===== 动画关键帧 ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px var(--red-glow); }
+  50% { box-shadow: 0 0 40px var(--red-glow), 0 0 60px rgba(192, 57, 43, 0.2); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.7; }
+  94% { opacity: 1; }
+  96% { opacity: 0.8; }
+  97% { opacity: 1; }
+}
+
+@keyframes stamp {
+  0% { transform: scale(3) rotate(-15deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(-15deg); opacity: 1; }
+  70% { transform: scale(0.95) rotate(-15deg); }
+  100% { transform: scale(1) rotate(-15deg); opacity: 1; }
+}
+
+@keyframes swing {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes magnify {
+  0% { transform: translateX(-20px) scale(1); }
+  50% { transform: translateX(20px) scale(1.05); }
+  100% { transform: translateX(-20px) scale(1); }
+}
+
+@keyframes fogDrift {
+  0% { transform: translateX(-10%) translateY(0); opacity: 0.3; }
+  50% { transform: translateX(10%) translateY(-5%); opacity: 0.5; }
+  100% { transform: translateX(-10%) translateY(0); opacity: 0.3; }
+}
+
+@keyframes lampSway {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+@keyframes detectiveBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fogDisperse {
+  0% { opacity: 1; filter: blur(8px); }
+  50% { opacity: 0.6; filter: blur(4px); }
+  100% { opacity: 0; filter: blur(0); }
+}
+
+@keyframes cardReveal {
+  0% { opacity: 0; transform: scale(0.8) rotate(0deg); filter: brightness(0.3); }
+  60% { opacity: 1; transform: scale(1.05) rotate(var(--card-rotate, 0deg)); filter: brightness(1.1); }
+  100% { opacity: 1; transform: scale(1) rotate(var(--card-rotate, 0deg)); filter: brightness(1); }
+}
+
+@keyframes redPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(192,57,43,0.4), 0 4px 16px rgba(192,57,43,0.2); }
+  50% { box-shadow: 0 0 20px rgba(192,57,43,0.6), 0 4px 24px rgba(192,57,43,0.4); }
+}
+
+@keyframes goldGlow {
+  0%, 100% { box-shadow: 0 0 6px rgba(212,160,23,0.3); }
+  50% { box-shadow: 0 0 16px rgba(212,160,23,0.5), 0 0 24px rgba(212,160,23,0.2); }
+}
+
+@keyframes ropeSway {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+@keyframes unlockShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 2px;
+}
+
+/* ===== 输入框通用样式 ===== */
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  transition: border-color 0.3s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--red-primary);
+  box-shadow: 0 0 0 2px var(--shadow-red);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+textarea.input-field {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ===== 页面转场 ===== */
+.page-transition {
+  animation: fadeIn 0.4s ease;
+}
