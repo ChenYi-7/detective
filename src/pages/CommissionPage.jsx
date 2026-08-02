@@ -141,7 +141,7 @@ export default function CommissionPage() {
             任务描述
           </label>
           <textarea className="input-field"
-            placeholder="描述你想完成的事情。越具体，侦探拆解得越准确。\n\n例如：\n· 创建作品集选题，需要包含3个方向\n· 准备下周的汇报PPT，约15页\n· 学习React基础，能做出一个小项目"
+            placeholder={"描述你想完成的事情。越具体，侦探拆解得越准确。\n\n例如：\n· 创建作品集选题，需要包含3个方向\n· 准备下周的汇报PPT，约15页\n· 学习React基础，能做出一个小项目"}
             value={materials}
             onChange={e => setMaterials(e.target.value)}
             rows={5}

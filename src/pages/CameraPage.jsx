@@ -38,6 +38,7 @@ export default function CameraPage() {
 
   const handleCapture = async () => {
     if (!videoRef.current || !canvasRef.current) return
+    const startTime = Date.now()
     const video = videoRef.current
     const canvas = canvasRef.current
     canvas.width = video.videoWidth
@@ -57,6 +58,7 @@ export default function CameraPage() {
 
     // AI 分析
     setAnalyzing(true)
+    let createdCaseId = null
     try {
       const result = await analyzeDeskPhoto(dataUrl)
       const cluesList = result.clues || [result]
@@ -86,6 +88,7 @@ export default function CameraPage() {
       }
       saveCase(newCase)
       setCurrentCaseId(caseId)
+      createdCaseId = caseId
     } catch (err) {
       console.error('AI分析失败:', err)
       // 降级：创建默认案件
@@ -108,22 +111,25 @@ export default function CameraPage() {
       }
       saveCase(newCase)
       setCurrentCaseId(caseId)
+      createdCaseId = caseId
     }
     setAnalyzing(false)
 
-    // 跳转到推理墙
+    // 等待转场动画完成后跳转（确保案件已创建）
+    const minDelay = 2500
+    const elapsed = Date.now() - startTime
+    const remaining = Math.max(0, minDelay - elapsed)
     setTimeout(() => {
-      const cases = JSON.parse(localStorage.getItem('detective_cases') || '[]')
-      const latestCase = cases[cases.length - 1]
-      if (latestCase) {
-        navigate(`/case/${latestCase.id}`)
+      if (createdCaseId) {
+        navigate(`/case/${createdCaseId}`)
       }
-    }, 2500)
+    }, remaining)
   }
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
+    const startTime = Date.now()
     const dataUrl = await fileToBase64(file)
     setCapturedImage(dataUrl)
     setPhase(1)
@@ -132,6 +138,7 @@ export default function CameraPage() {
     setTimeout(() => setPhase(4), 1800)
 
     setAnalyzing(true)
+    let createdCaseId = null
     try {
       const result = await analyzeDeskPhoto(dataUrl)
       const cluesList = result.clues || [result]
@@ -160,6 +167,7 @@ export default function CameraPage() {
       }
       saveCase(newCase)
       setCurrentCaseId(caseId)
+      createdCaseId = caseId
     } catch {
       const caseId = generateId()
       saveCase({
@@ -172,12 +180,17 @@ export default function CameraPage() {
         currentClueIndex: 0, completedClues: 0, createdAt: Date.now(), updatedAt: Date.now(),
       })
       setCurrentCaseId(caseId)
+      createdCaseId = caseId
     }
     setAnalyzing(false)
+    const minDelay = 2500
+    const elapsed = Date.now() - startTime
+    const remaining = Math.max(0, minDelay - elapsed)
     setTimeout(() => {
-      const cases = JSON.parse(localStorage.getItem('detective_cases') || '[]')
-      navigate(`/case/${cases[cases.length - 1].id}`)
-    }, 2500)
+      if (createdCaseId) {
+        navigate(`/case/${createdCaseId}`)
+      }
+    }, remaining)
   }
 
   return (
