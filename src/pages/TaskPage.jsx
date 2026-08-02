@@ -37,7 +37,17 @@ export default function TaskPage() {
       const updated = { ...caseData }
       updated.clues[parseInt(clueIndex)].clue_status = 'done'
       updated.completedClues = (updated.completedClues || 0) + 1
-      updated.clues[parseInt(clueIndex) + 1] && (updated.clues[parseInt(clueIndex) + 1].clue_status = 'pending')
+      // 检查是否全部完成
+      const allDone = updated.clues.every(c => c.clue_status === 'done')
+      if (allDone) {
+        updated.case_status = 'completed'
+      } else {
+        const nextIdx = updated.clues.findIndex(c => c.clue_status === 'blank')
+        if (nextIdx >= 0) {
+          updated.clues[nextIdx].clue_status = 'pending'
+          updated.currentClueIndex = nextIdx
+        }
+      }
       saveCase(updated)
       setCaseData(updated)
       setShowStamp(true)
@@ -51,12 +61,15 @@ export default function TaskPage() {
       setTimeout(() => {
         setCompleting(false)
         setShowStamp(false)
-        // 跳转到下一个线索
-        const nextIdx = updated.clues.findIndex(c => c.clue_status === 'pending')
-        if (nextIdx >= 0) {
-          navigate(`/task/${caseId}/${nextIdx}`)
-        } else {
+        if (allDone) {
           navigate(`/case/${caseId}`)
+        } else {
+          const nextIdx = updated.clues.findIndex(c => c.clue_status === 'pending')
+          if (nextIdx >= 0) {
+            navigate(`/task/${caseId}/${nextIdx}`)
+          } else {
+            navigate(`/case/${caseId}`)
+          }
         }
       }, 2500)
     } else {

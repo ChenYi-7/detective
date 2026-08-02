@@ -17,10 +17,18 @@ export default function CasePage() {
       setCaseData(data)
       setCurrentCaseId(caseId)
       setShowClue(false)
-      // 如果有待确认的线索，延迟显示
-      const hasPending = data.clues?.some(c => c.clue_status === 'pending')
-      if (hasPending) {
-        setTimeout(() => setShowClue(true), 1500)
+      // 已完成的快速开工案件，直接显示三按钮过渡页
+      const isQuickDone = data.creation_mode === 'quick_capture'
+        && !data.has_formal_goal
+        && data.case_status === 'completed'
+      if (isQuickDone) {
+        setShowCaseComplete(true)
+      } else {
+        // 如果有待确认的线索，延迟显示
+        const hasPending = data.clues?.some(c => c.clue_status === 'pending')
+        if (hasPending) {
+          setTimeout(() => setShowClue(true), 1500)
+        }
       }
     }
     setLoading(false)
@@ -98,6 +106,8 @@ export default function CasePage() {
   const completedCount = caseData.clues?.filter(c => c.clue_status === 'done').length || 0
   const totalCount = caseData.clues?.length || 0
   const isCompleted = caseData.case_status === 'completed'
+    || (caseData.clues?.length > 0 && caseData.clues.every(c => c.clue_status === 'done'))
+  const isQuickCase = caseData.creation_mode === 'quick_capture'
 
   return (
     <div className="page-container page-transition" style={{
@@ -396,28 +406,8 @@ export default function CasePage() {
         </div>
       )}
 
-      {/* 案件完成状态 */}
+      {/* 案件完成状态 - 三按钮 */}
       {isCompleted && (
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          zIndex: 10, textAlign: 'center',
-          padding: '40px 20px',
-          background: 'linear-gradient(180deg, transparent, rgba(10,10,10,0.95))',
-          animation: 'fadeInUp 0.8s ease',
-        }}>
-          <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎉</div>
-          <h2 style={{ color: '#f0e6d3', fontSize: '22px', marginBottom: '8px' }}>案件告破！</h2>
-          <p style={{ color: '#a89880', fontSize: '14px', marginBottom: '20px' }}>
-            所有线索已完成，推理墙全亮
-          </p>
-          <button onClick={() => navigate('/archive')} className="btn-primary">
-            查看结案报告
-          </button>
-        </div>
-      )}
-
-      {/* 首个案件完成 - 跳转委托页 */}
-      {showCaseComplete && (
         <div style={{
           position: 'absolute', inset: 0, zIndex: 20,
           background: 'rgba(0,0,0,0.9)',
@@ -447,27 +437,35 @@ export default function CasePage() {
             fontSize: '24px', color: '#f0e6d3',
             textAlign: 'center', marginBottom: '12px',
             animation: 'fadeInUp 0.5s ease 0.3s both',
-          }}>桌面已整理完毕！</h2>
+          }}>{isQuickCase ? '桌面已整理完毕！' : '案件告破！'}</h2>
           <p style={{
             fontSize: '14px', color: '#a89880',
             textAlign: 'center', marginBottom: '32px', lineHeight: 1.6,
             animation: 'fadeInUp 0.5s ease 0.5s both',
             maxWidth: '280px',
           }}>
-            侦探已清除障碍。<br />现在，告诉我你真正想完成的目标是什么？
+            {isQuickCase
+              ? <>侦探已清除障碍。<br />现在，告诉我你真正想完成的目标是什么？</>
+              : '所有线索已完成，推理墙全亮'}
           </p>
           <div style={{
-            display: 'flex', gap: '12px', width: '100%', maxWidth: '300px',
+            display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '300px',
             animation: 'fadeInUp 0.5s ease 0.7s both',
           }}>
             <button onClick={() => navigate('/commission')}
-              className="btn-primary" style={{ flex: 2, fontSize: '15px' }}>
+              className="btn-primary" style={{ fontSize: '15px' }}>
               委托新案件
             </button>
-            <button onClick={() => navigate('/home')} className="btn-secondary"
-              style={{ flex: 1, fontSize: '13px' }}>
-              稍后
-            </button>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => navigate('/archive')} className="btn-secondary"
+                style={{ flex: 1, fontSize: '13px' }}>
+                查看结案报告
+              </button>
+              <button onClick={() => navigate('/home')} className="btn-secondary"
+                style={{ flex: 1, fontSize: '13px' }}>
+                稍后
+              </button>
+            </div>
           </div>
         </div>
       )}
